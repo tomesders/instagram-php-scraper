@@ -161,6 +161,11 @@ class Media extends AbstractModel
     protected $sidecarMedias = [];
 
     /**
+     * @var array
+     */
+    protected $sponsoringData = [];
+
+    /**
      * @var string
      */
     protected $locationSlug;
@@ -446,6 +451,13 @@ class Media extends AbstractModel
     }
 
     /**
+     * @return array
+     */
+    public function getSponsoringData(): array {
+        return $this->sponsoringData;
+    }
+
+    /**
      * @param $value
      * @param $prop
      */
@@ -631,6 +643,22 @@ class Media extends AbstractModel
             case 'date':
                 $this->createdTime = (int)$value;
                 break;
+
+            // ERWEITERUNG
+            case 'edge_media_to_sponsor_user':
+                if (!is_array($arr[$prop]['edges'])) {
+                    break;
+                }
+                foreach ($arr[$prop]['edges'] as $edge) {
+                    if (!isset($edge['node'])) {
+                        continue;
+                    }
+
+                    $this->sponsoringData = $edge['node']['sponsor'] ?? [];
+                }
+                break;
+
+
             case '__typename':
                 if ($value == 'GraphImage') {
                     $this->type = static::TYPE_IMAGE;
