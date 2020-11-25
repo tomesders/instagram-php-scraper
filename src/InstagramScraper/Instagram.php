@@ -45,17 +45,17 @@ class Instagram
     const X_IG_APP_ID = '936619743392459';
 
     /** @var CacheInterface $instanceCache */
-    private static $instanceCache = null;
+    protected static $instanceCache = null;
 
     public $pagingTimeLimitSec = self::PAGING_TIME_LIMIT_SEC;
     public $pagingDelayMinimumMicrosec = self::PAGING_DELAY_MINIMUM_MICROSEC;
     public $pagingDelayMaximumMicrosec = self::PAGING_DELAY_MAXIMUM_MICROSEC;
-    private $sessionUsername;
-    private $sessionPassword;
-    private $userSession;
-    private $rhxGis = null;
-    private $userAgent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.89 Safari/537.36';
-    private $customCookies = null;
+    protected $sessionUsername;
+    protected $sessionPassword;
+    protected $userSession;
+    protected $rhxGis = null;
+    protected $userAgent = 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/84.0.4147.89 Safari/537.36';
+    protected $customCookies = null;
 
     /**
      * Instagram constructor.
@@ -131,7 +131,7 @@ class Instagram
      *
      * @return string
      */
-    private static function getErrorBody($rawError)
+    protected static function getErrorBody($rawError)
     {
         if (is_string($rawError)) {
             return $rawError;
@@ -197,7 +197,7 @@ class Instagram
      *
      * @return array
      */
-    private function generateHeaders($session, $gisToken = null)
+    protected function generateHeaders($session, $gisToken = null)
     {
         $headers = [];
         if ($session) {
@@ -235,7 +235,7 @@ class Instagram
      *
      * @return string
      */
-    public function getUserAgent()
+    protected function getUserAgent()
     {
         return $this->userAgent;
     }
@@ -254,7 +254,7 @@ class Instagram
      * @param $rawBody
      * @return mixed
      */
-    private function decodeRawBodyToJson($rawBody)
+    protected function decodeRawBodyToJson($rawBody)
     {
         return json_decode($rawBody, true, 512, JSON_BIGINT_AS_STRING);
     }
@@ -326,7 +326,7 @@ class Instagram
      *
      * @return array
      */
-    private function parseCookies($headers)
+    protected function parseCookies($headers)
     {
         if($this->customCookies){
             return $this->getCustomCookies();
@@ -458,7 +458,7 @@ class Instagram
         return Account::create($userArray['graphql']['user']);
     }
 
-    private static function extractSharedDataFromBody($body)
+    protected static function extractSharedDataFromBody($body)
     {
         if (preg_match_all('#\_sharedData \= (.*?)\;\<\/script\>#', $body, $out)) {
             return json_decode($out[1][0], true, 512, JSON_BIGINT_AS_STRING);
@@ -534,7 +534,7 @@ class Instagram
      * @return string
      * @throws InstagramException
      */
-    private function generateGisToken($variables)
+    protected function generateGisToken($variables)
     {
         return null;
 //        return md5(implode(':', [$this->getRhxGis(), $variables]));
@@ -1722,7 +1722,7 @@ class Instagram
      * @throws InstagramChallengeRecaptchaException
      * @throws InstagramChallengeSubmitPhoneNumberException
      */
-    private function verifyTwoStep($response, $cookies, TwoStepVerificationInterface $twoStepVerificator = null)
+    protected function verifyTwoStep($response, $cookies, TwoStepVerificationInterface $twoStepVerificator = null)
     {
         $new_cookies = $this->parseCookies($response->headers);
         $cookies = array_merge($cookies, $new_cookies);
@@ -1920,7 +1920,7 @@ class Instagram
      * @throws InstagramException
      * @throws InstagramNotFoundException
      */
-    private function getSharedDataFromPage($url = Endpoints::BASE_URL)
+    protected function getSharedDataFromPage($url = Endpoints::BASE_URL)
     {
         $response = Request::get(rtrim($url, '/') . '/', $this->generateHeaders($this->userSession));
         if (static::HTTP_NOT_FOUND === $response->code) {
